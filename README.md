@@ -26,10 +26,7 @@ let package = Package(
     targets: [
         .target(
             name: "XXX",
-            dependencies: ["StringCase"]),
-        .testTarget(
-            name: "XXXTests",
-            dependencies: ["CommandLineArgs"])
+            dependencies: ["StringCase"])
     ]
 )
 ```

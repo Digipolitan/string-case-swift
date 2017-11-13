@@ -7,33 +7,34 @@
 
 import Foundation
 
-public extension String {
+public enum StringCaseFormat {
 
-    public enum CaseFormat {
-
-        public enum SnakeCase {
-            case lower
-            case upper
-            case capitalized
-        }
-
-        public enum CamelCase {
-            case `default`
-            case capitalized
-        }
+    public enum SnakeCase {
+        case lower
+        case upper
+        case capitalized
     }
 
-    public func snakeCased(_ format: CaseFormat.SnakeCase = .lower) -> String {
+    public enum CamelCase {
+        case `default`
+        case capitalized
+    }
+}
+
+public extension String {
+
+    public func caseSplit() -> [String] {
+        var res: [String] = []
+        let trim = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let alphanumerics = CharacterSet.alphanumerics
         let uppercaseLetters = CharacterSet.uppercaseLetters
         let lowercaseLetters = CharacterSet.lowercaseLetters
-        var underscore = false
-        var previousCase = 0 // 0 none, 1 upper, 2 lower, 3 other
-        var currentCase = 0 // 0 none, 1 upper, 2 lower, 3 other
-        var letterInWord = 0
-        var res = ""
-        for ch in self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) {
-            for scalar in ch.unicodeScalars {
+        trim.split(separator: " ").forEach { str in
+            var previousCase = 0
+            var currentCase = 0
+            var caseChange = false
+            var scalars = UnicodeScalarView()
+            for scalar in str.unicodeScalars {
                 if alphanumerics.contains(scalar) {
                     if uppercaseLetters.contains(scalar) {
                         currentCase = 1
@@ -42,8 +43,7 @@ public extension String {
                     } else {
                         currentCase = 0
                     }
-                    var str = String(scalar)
-                    var caseChange = underscore
+                    let letterInWord = scalars.count
                     if !caseChange && letterInWord > 0 {
                         if currentCase != previousCase {
                             if previousCase == 1 {
@@ -56,57 +56,42 @@ public extension String {
                         }
                     }
                     if caseChange {
-                        res += "_"
-                        letterInWord = 0
+                        res.append(String(scalars))
+                        scalars.removeAll()
                     }
-                    letterInWord += 1
-                    if format == .capitalized {
-                        if currentCase != 1 {
-                            if caseChange || previousCase == 0 {
-                                str = str.uppercased()
-                            }
-                        } else if !caseChange {
-                            str = str.lowercased()
-                        }
-                    } else if format == .upper && currentCase != 1{
-                        str = str.uppercased()
-                    } else if format == .lower && currentCase != 2 {
-                        str = str.lowercased()
-                    }
-                    res += str
-                    underscore = false;
-                    previousCase = currentCase;
+                    scalars.append(scalar)
+                    caseChange = false
+                    previousCase = currentCase
                 } else {
-                    underscore = true
+                    caseChange = true
                 }
+            }
+            if scalars.count > 0 {
+                res.append(String(scalars))
             }
         }
         return res
     }
 
-    public func camelCased(_ format: CaseFormat.CamelCase = .default) -> String {
-        var uppercase = format == .capitalized;
-        var res = ""
-        let alphanumerics = CharacterSet.alphanumerics
-        let lowercaseLetters = CharacterSet.lowercaseLetters
-        for ch in self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) {
-            for scalar in ch.unicodeScalars {
-                if alphanumerics.contains(scalar) {
-                    var str = String(scalar)
-                    if uppercase {
-                        if lowercaseLetters.contains(scalar) {
-                            str = str.uppercased()
-                        }
-                        uppercase = false
-                    } else if res.count == 0 {
-                        str = str.lowercased()
-                    }
-                    res += str
-                } else {
-                    uppercase = true
-                }
-            }
+    public func snakeCased(_ format: StringCaseFormat.SnakeCase = .lower) -> String {
+        let split = self.caseSplit()
+        if format == .lower {
+            return split.map { $0.lowercased() }.joined(separator: "_")
+        } else if format == .upper {
+            return split.map { $0.uppercased() }.joined(separator: "_")
         }
-        return res
+        return split.map { $0.capitalized }.joined(separator: "_")
+    }
+
+    public func camelCased(_ format: StringCaseFormat.CamelCase = .default) -> String {
+        var res: [String] = []
+        for (i, str) in self.caseSplit().enumerated() {
+            if i == 0 && format == .default {
+                res.append(str.lowercased())
+                continue
+            }
+            res.append(str.capitalized)
+        }
+        return res.joined()
     }
 }
