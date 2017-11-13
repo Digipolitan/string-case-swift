@@ -15,7 +15,7 @@ class StringCamelCaseTests: XCTestCase {
     }
 
     func testCapitalizeCamelCase() {
-        XCTAssertEqual("i love swift".camelCased(.capitalized), "ILoveSwift")
+        XCTAssertEqual("i3 love swift".camelCased(.capitalized), "I3LoveSwift")
     }
 
     func testCapitalizeCamelCaseTrim() {

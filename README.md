@@ -21,15 +21,12 @@ let package = Package(
             targets: ["XXX"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Digipolitan/string-case-swift.git", .branch("master"))
+        .package(url: "https://github.com/Digipolitan/string-case-swift.git", from: "1.0.0")
     ],
     targets: [
         .target(
             name: "XXX",
-            dependencies: ["StringCase"]),
-        .testTarget(
-            name: "XXXTests",
-            dependencies: ["CommandLineArgs"])
+            dependencies: ["StringCase"])
     ]
 )
 ```
