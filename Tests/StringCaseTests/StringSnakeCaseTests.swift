@@ -1,7 +1,7 @@
 import XCTest
 @testable import StringCase
 
-class StringSnakeCaseTests: XCTestCase {
+final class StringSnakeCaseTests: XCTestCase {
     func testSnakeCase() {
         XCTAssertEqual("i love swift".snakeCased(), "i_love_swift")
     }

@@ -85,8 +85,8 @@ public extension String {
 
     public func camelCased(_ format: StringCaseFormat.CamelCase = .default) -> String {
         var res: [String] = []
-        for (i, str) in self.caseSplit().enumerated() {
-            if i == 0 && format == .default {
+        for (idx, str) in self.caseSplit().enumerated() {
+            if idx == 0 && format == .default {
                 res.append(str.lowercased())
                 continue
             }
