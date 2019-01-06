@@ -1,6 +1,7 @@
 import XCTest
-@testable import StringCaseTests
 
-XCTMain([
-    testCase(StringCaseTests.allTests)
-])
+import StringCaseTests
+
+var tests = [XCTestCaseEntry]()
+tests += StringCaseTests.allTests()
+XCTMain(tests)
